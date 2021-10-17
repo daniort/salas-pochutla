@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../webs/xolofunc"
+		},
+		{
+			"path": "../../umbral"
+		},
+		{
+			"path": "../../prueba/frida"
+		}
+	],
+	"settings": {}
+}

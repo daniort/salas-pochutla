@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "95693905840",
+    "project_id": "sigea-2b3bf",
+    "storage_bucket": "sigea-2b3bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:95693905840:android:aea66088c9c202e3b18075",
+        "android_client_info": {
+          "package_name": "tecnm.pochutla.sigea"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "95693905840-er1qfm8bmmceteg63sl9mrimmcjk5brt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYibsxYFsNLOm2s7fc46C5KO6SY_ybcuc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "95693905840-er1qfm8bmmceteg63sl9mrimmcjk5brt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

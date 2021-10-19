@@ -177,4 +177,16 @@ class AppState with ChangeNotifier {
       return [];
     }
   }
+
+  Future<ResModel> agregarNuevaUsuario(Map info) async {
+    try {
+      onLoading();
+      ResModel _res = await UserServices().addNuevaUser(info);
+      offLoading();
+      return _res;
+    } catch (e) {
+      offLoading();
+      return resfail;
+    }
+  }
 }

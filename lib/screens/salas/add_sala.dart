@@ -103,8 +103,7 @@ class _AddSalaPageState extends State<AddSalaPage> {
                         }
                       }
                     },
-                    child:
-                        this.state!.isLoading ? spinner() : Text('Solicitar'),
+                    child: this.state!.isLoading ? spinner() : Text('Agregar'),
                   ),
                 ],
               ),

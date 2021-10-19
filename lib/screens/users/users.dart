@@ -138,6 +138,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                                                       ? secundaryGreen
                                                       : secundaryRed,
                                                 );
+                                                setState(() {});
                                               },
                                             ),
                                           ],

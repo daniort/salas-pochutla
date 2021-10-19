@@ -187,7 +187,7 @@ class UserServices {
     try {
       await realDB.reference().child('salas').push().set(info);
       return ResModel(
-        mensaje: 'Solicitud realizada',
+        mensaje: 'Sala agregada',
         success: true,
       );
     } catch (e) {
@@ -225,6 +225,18 @@ class UserServices {
     try {
       await realDB.reference().child('users').child(s).remove();
       return ResModel(success: true, mensaje: "Usuario eliminado");
+    } catch (e) {
+      return resfail;
+    }
+  }
+
+  Future<ResModel> addNuevaUser(Map info) async {
+    try {
+      await realDB.reference().child('users').push().set(info);
+      return ResModel(
+        mensaje: 'Usuario agregado',
+        success: true,
+      );
     } catch (e) {
       return resfail;
     }

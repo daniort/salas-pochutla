@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sigea/screens/home.dart';
+import 'package:sigea/screens/screens.dart';
 import 'package:sigea/services/services.dart';
 import 'package:sigea/values/themes.dart';
 import 'package:sigea/values/values.dart';
@@ -98,7 +99,16 @@ class _MyBodyState extends State<MyBody> {
       case 'ALUMNO':
         return HomeAlumnoPage();
       case 'ADMIN':
-        return HomeDocentePage();
+        switch (this.state!.indexBody) {
+          case 1:
+            return HomeDocentePage();
+          case 2:
+            return UsuariosPage();
+          case 3:
+            return SalasPage();
+          default:
+            return HomeDocentePage();
+        }
       default:
         return HomeAlumnoPage();
     }
@@ -114,17 +124,15 @@ class MyDrawer extends StatelessWidget {
     this.state = Provider.of<AppState>(context, listen: true);
     this.size = MediaQuery.of(context).size;
 
-    if (this.state!.isLogin) {
-      switch (this.state!.isUser.user!.toLowerCase()) {
-        case 'alumno':
-          return drawerAlumno(context);
-        case 'admin':
-          return drawerAdmin(context);
-        default:
-          return drawer(context);
-      }
-    } else {
-      return drawerInvitado(context);
+    switch (this.state!.tipoUser.toUpperCase()) {
+      case 'DOCENTE':
+        return drawerDocente(context);
+      case 'ALUMNO':
+        return drawerAlumno(context);
+      case 'ADMIN':
+        return drawerAdmin(context);
+      default:
+        return drawerAlumno(context);
     }
   }
 
@@ -145,32 +153,8 @@ class MyDrawer extends StatelessWidget {
                 style: styleDrawer,
               ),
               onTap: () {
+                Navigator.pop(context);
                 this.state!.changeIndexBody(1);
-              },
-            ),
-            Divider(color: tercaryRed),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.add, color: tercaryRed),
-              title: const Text(
-                'Agregar Solicitud',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                print('object');
-              },
-            ),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.history, color: tercaryRed),
-              title: const Text(
-                'Solicitudes realizadas',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                print('object');
               },
             ),
             Divider(color: tercaryRed),
@@ -182,18 +166,22 @@ class MyDrawer extends StatelessWidget {
                 'Usuarios',
                 style: styleDrawer,
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                this.state!.changeIndexBody(2);
+              },
             ),
             ListTile(
               dense: true,
               focusColor: Colors.yellow,
               leading: Icon(Icons.location_city, color: tercaryRed),
               title: const Text(
-                'Espacios',
+                'Salas',
                 style: styleDrawer,
               ),
               onTap: () {
-                print('object');
+                Navigator.pop(context);
+                this.state!.changeIndexBody(3);
               },
             ),
             Divider(color: tercaryRed),
@@ -242,7 +230,7 @@ class MyDrawer extends StatelessWidget {
     );
   }
 
-  Widget drawerInvitado(BuildContext context) {
+  Widget drawerDocente(BuildContext context) {
     return Drawer(
       child: Container(
         color: primaryRed,

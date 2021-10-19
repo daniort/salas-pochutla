@@ -182,4 +182,16 @@ class UserServices {
       return resfail;
     }
   }
+
+  Future<ResModel> addNuevaSala(Map info) async {
+    try {
+      await realDB.reference().child('salas').push().set(info);
+      return ResModel(
+        mensaje: 'Solicitud realizada',
+        success: true,
+      );
+    } catch (e) {
+      return resfail;
+    }
+  }
 }

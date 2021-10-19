@@ -153,4 +153,16 @@ class AppState with ChangeNotifier {
       return null;
     }
   }
+
+  Future<ResModel> agregarNuevaSala(Map info) async {
+    try {
+      onLoading();
+      ResModel _res = await UserServices().addNuevaSala(info);
+      offLoading();
+      return _res;
+    } catch (e) {
+      offLoading();
+      return resfail;
+    }
+  }
 }

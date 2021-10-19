@@ -25,19 +25,9 @@ ThemeData primaryTheme(BuildContext context) {
     primaryColor: primaryRed,
     accentColor: primaryRed,
     primarySwatch: Colors.red,
-
+    highlightColor: Colors.indigo,
     focusColor: Colors.purple,
     hintColor: Colors.grey,
-    hoverColor: Colors.indigo,
-
-    // canvasColor: Colors.lime,
-
-    // accentColorBrightness: Colors.red,
-
-    // primarySwatch: Colors.red,
-    colorScheme: ColorScheme.light(
-      primary: primaryRed,
-    ),
     cardColor: Colors.green,
   );
 }

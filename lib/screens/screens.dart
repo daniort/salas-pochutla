@@ -4,3 +4,4 @@ export 'solicitud/add_solicitud.dart';
 export 'login.dart';
 
 export 'salas/add_sala.dart';
+export 'salas/salas.dart';

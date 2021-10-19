@@ -1,322 +1,364 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sigea/models/models.dart';
 import 'package:sigea/services/services.dart';
 import 'package:sigea/values/themes.dart';
+import 'package:sigea/values/values.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class HomePage extends StatefulWidget {
+class HomeDocentePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomeDocentePageState createState() => _HomeDocentePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeDocentePageState extends State<HomeDocentePage> {
+  Size? size;
+  AppState? state;
+  @override
+  Widget build(BuildContext context) {
+    print('ESTAMOS EN EL HOME:::::::::::::');
+    this.size = MediaQuery.of(context).size;
+    this.state = Provider.of<AppState>(context, listen: true);
+
+    // if (this.state!.isUser.cargo! == 'admin') {
+    //   return Scaffold(
+    //     body: Column(
+    //       children: [Text('data')],
+    //     ),
+    //   );
+    // } else
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          this.state!.isLogin
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 20),
+                  child: Text(
+                    'Buenas Tardes, \n' + this.state!.isUser.nombre!,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.bold,
+                        color: textGrey),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 20),
+                  child: Text(
+                    'Salas registradas',
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontFamily: 'Roboto',
+                        fontWeight: FontWeight.bold,
+                        color: textGrey),
+                  ),
+                ),
+          rowSimbologia(),
+          SizedBox(height: 10),
+          BodyTable(),
+        ],
+      ),
+    );
+  }
+
+  Padding rowSimbologia() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            // margin: EdgeInsets.all(20),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: Colors.white,
+                border: Border.all(width: 1)),
+            // child: Icon(Icons.circle, color: Colors.white),
+          ),
+          SizedBox(width: 10),
+          Text("Futuras"),
+          SizedBox(width: 10),
+          Container(
+            // margin: EdgeInsets.all(20),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: Colors.green[200],
+                border: Border.all(width: 1)),
+            // child: Icon(Icons.circle, color: Colors.white),
+          ),
+          SizedBox(width: 10),
+          Text("Fecha actual"),
+          SizedBox(width: 10),
+          Container(
+            // margin: EdgeInsets.all(20),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: Colors.grey[400],
+                border: Border.all(width: 1)),
+            // child: Icon(Icons.circle, color: Colors.white),
+          ),
+          SizedBox(width: 10),
+          Text("Pasadas"),
+        ],
+      ),
+    );
+  }
+}
+
+class BodyTable extends StatelessWidget {
+  AppState? state;
+
+  @override
+  Widget build(BuildContext context) {
+    this.state = Provider.of<AppState>(context, listen: true);
+    return FutureBuilder(
+      future: this.state!.getSalasRegistradas(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        // return Container();
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return Expanded(child: spinner());
+          case ConnectionState.done:
+            List<SolicitudModel> _solicitudes = snapshot.data ?? [];
+
+            if (_solicitudes.isEmpty)
+              return Expanded(
+                child: Center(
+                  // enabled: false,
+                  child: Text('No hay salas apartadas'),
+                ),
+              );
+
+            print(_solicitudes[0].horaFinal);
+
+            return Expanded(
+              child: ListView(
+                children: [
+                  for (SolicitudModel item in _solicitudes)
+                    Container(
+                      color: colorTime(item.fecha!),
+                      margin: EdgeInsets.symmetric(horizontal: 15),
+                      padding: EdgeInsets.symmetric(vertical: 5),
+                      child: ExpansionTile(
+                        // backgroundColor: secundaryGrey,
+                        backgroundColor: colorTime(item.fecha!),
+                        collapsedTextColor: primaryGrey,
+                        textColor: primaryBlack,
+                        // initiallyExpanded: true,
+                        // leading: Icon(Icons.circle),
+                        title: Text(item.nombre!),
+                        subtitle: Row(
+                          children: [
+                            // Container(
+                            //   // margin: EdgeInsets.all(20),
+                            //   padding: EdgeInsets.all(10),
+                            //   decoration: BoxDecoration(
+                            //       borderRadius: BorderRadius.circular(100),
+                            //       color: colorTime(item.fecha!),
+                            //       border: Border.all(width: 0.5)),
+                            //   // child: Icon(Icons.circle, color: Colors.white),
+                            // ),
+                            // SizedBox(width: 5),
+                            Text('Sala: ' + item.sala!.toString()),
+                          ],
+                        ),
+                        children: [
+                          ListTile(
+                            onTap: () async {
+                              if (item.urlSala == null) {
+                                await launch(
+                                  item.urlSala!,
+                                  forceSafariVC: false,
+                                  forceWebView: false,
+                                );
+                              }
+                            },
+                            leading: Icon(Icons.video_call),
+                            title: Text(item.urlSala!),
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.group),
+                            title: Text(item.area!),
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.access_time),
+                            title: Text(horaBonita(TimeOfDay(
+                                hour:
+                                    int.parse(item.horaInicial!.split(":")[0]),
+                                minute: int.parse(
+                                    item.horaInicial!.split(":")[1])))),
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.access_time_filled),
+                            title: Text(horaBonita(TimeOfDay(
+                                hour: int.parse(item.horaFinal!.split(":")[0]),
+                                minute:
+                                    int.parse(item.horaFinal!.split(":")[1])))),
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.calendar_today),
+                            title: Text(fechaBonita(item.fecha!)),
+                          ),
+                          ListTile(
+                            // leading: Icon(Icons.access_time_filled),
+                            title: Text('Descripción:'),
+                            subtitle: Text(item.descripcion!),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            );
+
+          default:
+            return TextFormField(
+              enabled: false,
+              decoration: InputDecoration(labelText: 'No hay Salas'),
+            );
+        }
+      },
+    );
+  }
+
+  colorTime(DateTime da) {
+    Color cor = Colors.white;
+    Duration diferencia = DateTime.now().difference(da);
+
+    // print('fecha resultante');
+    // print(da.millisecondsSinceEpoch);
+    // print(diferencia.inDays);
+
+    if (diferencia.inDays == 0) {
+      cor = Colors.green[100]!;
+    }
+    if (diferencia.inDays > 0) {
+      cor = Colors.grey[200]!;
+    }
+    if (diferencia.inDays < 0) {
+      cor = backgroudGrey;
+    }
+    return cor;
+  }
+}
+
+class HomeAlumnoPage extends StatefulWidget {
+  const HomeAlumnoPage({Key? key}) : super(key: key);
+
+  @override
+  _HomeAlumnoPageState createState() => _HomeAlumnoPageState();
+}
+
+class _HomeAlumnoPageState extends State<HomeAlumnoPage> {
   Size? size;
   AppState? state;
   @override
   Widget build(BuildContext context) {
     this.size = MediaQuery.of(context).size;
     this.state = Provider.of<AppState>(context, listen: true);
-    if (!this.state!.isLogin) {
-      // return pantalla con  la lista de evetos
-      return Scaffold(
-        backgroundColor: backgroudGrey,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
-              child: Text(
-                'Salas registradas',
-                style: TextStyle(
-                    fontSize: 25,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    color: textGrey),
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, 'add_solicitud');
-                    },
-                    child: Container(
-                      height: this.size!.height * 0.15,
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0, 0),
-                              blurRadius: 5.0),
-                        ],
-                        borderRadius: BorderRadius.circular(10),
-                        color: primaryRed,
-                      ),
+
+    return Scaffold(
+      body: FutureBuilder<List<SalaModel>>(
+        future: this.state!.getSalas(),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<SalaModel>> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return spinner();
+            case ConnectionState.done:
+              List<SalaModel> _salas = snapshot.data ?? [];
+
+              return GridView.count(
+                primary: false,
+                padding: const EdgeInsets.all(20),
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                crossAxisCount: 2,
+                children: <Widget>[
+                  for (SalaModel item in _salas)
+                    GestureDetector(
+                      onTap: () async {
+                        String _url = item.url ?? '';
+
+                        try {
+                          if (await canLaunch(_url)) {
+                            print(
+                                'ABRIENDO URL.......'); // chrome no jala en el emulador
+                            await launch(
+                              _url,
+                              forceSafariVC: false,
+                              universalLinksOnly: true,
+                            );
+                          } else {
+                            throw 'Could not launch $_url';
+                          }
+                        } catch (e) {
+                          print(e);
+                        }
+                      },
                       child: Container(
-                        margin: EdgeInsets.only(left: 5),
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        padding: EdgeInsets.all(8),
+                        child: Stack(
                           children: [
-                            Text(
-                              'SOLICITUD DE SALAS',
-                              style: TextStyle(
-                                // fontSize: 25,
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.bold,
-                                color: textRed,
+                            Positioned(
+                              right: 0.0,
+                              child: Icon(
+                                Icons.open_in_new,
+                                color: Colors.grey[400],
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    'Nueva solicitud de Sala',
-                                    overflow: TextOverflow.clip,
-                                    maxLines: 2,
+                                Text('SALA ' + item.numero.toString(),
                                     style: TextStyle(
                                       fontSize: 20,
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.bold,
-                                      color: textGrey,
-                                    ),
-                                  ),
+                                    )),
+                                Image.asset(
+                                  'assets/images/logo_meet.png',
+                                  height: this.size!.height * 0.08,
                                 ),
-                                SizedBox(width: 20),
-                                Icon(
-                                  Icons.notifications,
-                                  color: borderGrey,
-                                  size: 30,
+                                Text('Google Meet',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                    )),
+                                Text(
+                                  item.url!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: primaryBlue,
+                                  ),
                                 ),
                               ],
                             ),
                           ],
                         ),
+                        color: Colors.grey[200],
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    height: this.size!.height * 0.15,
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey,
-                            offset: Offset(0, 0),
-                            blurRadius: 5.0),
-                      ],
-                      borderRadius: BorderRadius.circular(10),
-                      color: primaryRed,
-                    ),
-                    child: Container(
-                      margin: EdgeInsets.only(left: 5),
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      color: Colors.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'SOLICITUD DE ASESORÍAS REALIZADAS',
-                            style: TextStyle(
-                              // fontSize: 25,
-                              fontFamily: 'Roboto',
-                              fontWeight: FontWeight.bold,
-                              color: textRed,
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '3',
-                                  overflow: TextOverflow.clip,
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: 'Roboto',
-                                    fontWeight: FontWeight.bold,
-                                    color: textGrey,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 20),
-                              Icon(
-                                Icons.notifications,
-                                color: borderGrey,
-                                size: 30,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
-              ),
-            )
-          ],
-        ),
-      );
-    } else
-      return Scaffold(
-        backgroundColor: backgroudGrey,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
-              child: Text(
-                'Buenas Tardes, Ruperto',
-                style: TextStyle(
-                    fontSize: 25,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    color: textGrey),
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, 'add_solicitud');
-                    },
-                    child: Container(
-                      height: this.size!.height * 0.15,
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0, 0),
-                              blurRadius: 5.0),
-                        ],
-                        borderRadius: BorderRadius.circular(10),
-                        color: primaryRed,
-                      ),
-                      child: Container(
-                        margin: EdgeInsets.only(left: 5),
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'SOLICITUD DE SALAS',
-                              style: TextStyle(
-                                // fontSize: 25,
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.bold,
-                                color: textRed,
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Nueva solicitud de Sala',
-                                    overflow: TextOverflow.clip,
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.bold,
-                                      color: textGrey,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 20),
-                                Icon(
-                                  Icons.notifications,
-                                  color: borderGrey,
-                                  size: 30,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    height: this.size!.height * 0.15,
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey,
-                            offset: Offset(0, 0),
-                            blurRadius: 5.0),
-                      ],
-                      borderRadius: BorderRadius.circular(10),
-                      color: primaryRed,
-                    ),
-                    child: Container(
-                      margin: EdgeInsets.only(left: 5),
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      color: Colors.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'SOLICITUD DE ASESORÍAS REALIZADAS',
-                            style: TextStyle(
-                              // fontSize: 25,
-                              fontFamily: 'Roboto',
-                              fontWeight: FontWeight.bold,
-                              color: textRed,
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '3',
-                                  overflow: TextOverflow.clip,
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: 'Roboto',
-                                    fontWeight: FontWeight.bold,
-                                    color: textGrey,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 20),
-                              Icon(
-                                Icons.notifications,
-                                color: borderGrey,
-                                size: 30,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      );
+              );
+            default:
+              return TextFormField(
+                enabled: false,
+                decoration: InputDecoration(labelText: 'No hay Salas'),
+              );
+          }
+        },
+      ),
+
+      //  Column(children: [
+      //   Text('data'),
+
+      // ]),
+    );
   }
 }

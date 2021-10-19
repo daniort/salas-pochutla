@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sigea/values/themes.dart';
 
+String horaBonita(TimeOfDay time) {
+  return "${time.hour}:${time.minute}";
+}
+
+String fechaBonita(DateTime date) {
+  return "${date.day} / ${date.month} / ${date.year}";
+}
+
 void snack(BuildContext context, String? mensaje, Color col) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(

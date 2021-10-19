@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sigea/models/models.dart';
 import 'package:sigea/services/user_services.dart';
 
@@ -6,14 +7,41 @@ class AppState with ChangeNotifier {
   int _indexBody = 1;
   bool _login = false;
   bool _loading = false;
+  String _tipeUser = 'invitado';
   UserModel? _user;
+  SharedPreferences? _prefs;
   ResModel resfail = ResModel(success: false, mensaje: 'Algo salió mal.');
 
   int get indexBody => this._indexBody;
+  String get tipoUser => this._tipeUser;
+  // ?? this._prefs!.getString('id_user');
   UserModel get isUser => this._user!;
   bool get isLoading => this._loading;
-
   bool get isLogin => this._login;
+
+  AppState() {
+    appLogin();
+  }
+
+  void appLogin() async {
+    this._prefs = await SharedPreferences.getInstance();
+    if (this._prefs!.containsKey('login')) {
+      print('si existe LA KEY  LOGIN');
+      this._user = await getUserData(this._prefs!.getString('id_user'));
+      if (this._user != null) {
+        this._login = true;
+        notifyListeners();
+      } else {
+        print('NO LOGIN');
+        this._login = false;
+        notifyListeners();
+      }
+    } else {
+      print('NO LOGIN');
+      this._login = false;
+      notifyListeners();
+    }
+  }
 
   void changeIndexBody(int i) {
     this._indexBody = i;
@@ -37,6 +65,10 @@ class AppState with ChangeNotifier {
       if (_res.success!) {
         this._login = true;
         this._user = _res.data;
+        this._prefs!.setBool('login', true);
+        this._prefs!.setString('id_user', this._user!.key!);
+        this._prefs!.setString('cargo', this._user!.cargo!);
+        this._tipeUser = this._user!.cargo!;
         notifyListeners();
       }
       offLoading();
@@ -86,6 +118,39 @@ class AppState with ChangeNotifier {
     } catch (e) {
       offLoading();
       return resfail;
+    }
+  }
+
+  List<SolicitudModel> salasRegistradas = [];
+  Future<List<SolicitudModel>> getSalasRegistradas() async {
+    try {
+      print('ahors que pasaY');
+      ResModel _res = await UserServices().getSalasRegistradas();
+      if (_res.success!) {
+        print('SI HAY SI HAY');
+        this.salasRegistradas = _res.data!;
+        return this.salasRegistradas;
+      } else {
+        print('NO HAY, NO HAY');
+
+        return this.salasRegistradas;
+      }
+    } catch (e) {
+      offLoading();
+      return this.salasRegistradas;
+    }
+  }
+
+  getUserData(String? string) async {
+    try {
+      ResModel res = await UserServices().getUserData(string!);
+      if (res.success!) {
+        return res.data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
     }
   }
 }

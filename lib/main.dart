@@ -25,10 +25,11 @@ class MyApp extends StatelessWidget {
       create: (BuildContext context) => AppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Sigea App',
+        title: 'Salas App',
         theme: primaryTheme(context),
         routes: rutas(context),
-        home: Home(),
+        initialRoute: '/',
+        // home: Home(),
       ),
     );
   }
@@ -44,30 +45,34 @@ class Home extends StatelessWidget {
         drawer: MyDrawer(),
         appBar: AppBar(
           title: Text(
-            'SIGEA',
+            'SALAS',
             style: TextStyle(fontFamily: 'Roboto'),
           ),
           actions: [
-            IconButton(
-                onPressed: () async {
-                  for (String item in areas) {
-                    await UserServices().addAreas({'area': item});
-                  }
-                },
-                icon: Icon(Icons.add)),
-            // Center(child: Text(this.state!.isUser.cargo?: 'a')),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CircleAvatar(
-                backgroundColor: Colors.blue,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Image.asset(
-                    'assets/images/image.jpeg',
+            // IconButton(
+            //     onPressed: () async {
+            //       for (String item in areas) {
+            //         await UserServices().addAreas({'area': item});
+            //       }
+            //     },
+            //     icon: Icon(Icons.add)),
+            if (this.state!.isLogin)
+              Center(
+                child: Text(this.state!.isUser.cargo ?? ''),
+              ),
+            if (this.state!.isLogin)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.blue,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.asset(
+                      'assets/images/image.jpeg',
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
         body: MyBody());
@@ -86,12 +91,16 @@ class _MyBodyState extends State<MyBody> {
   Widget build(BuildContext context) {
     this.state = Provider.of<AppState>(context, listen: true);
     this.size = MediaQuery.of(context).size;
-    switch (this.state!.indexBody) {
-      case 1:
-        return HomePage();
 
+    switch (this.state!.tipoUser.toUpperCase()) {
+      case 'DOCENTE':
+        return HomeDocentePage();
+      case 'ALUMNO':
+        return HomeAlumnoPage();
+      case 'ADMIN':
+        return HomeDocentePage();
       default:
-        return HomePage();
+        return HomeAlumnoPage();
     }
   }
 }
@@ -281,6 +290,7 @@ class MyDrawer extends StatelessWidget {
 
   Container headerDrawer() {
     return Container(
+      width: double.infinity,
       color: Colors.white,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -293,7 +303,7 @@ class MyDrawer extends StatelessWidget {
           SizedBox(height: 20),
           Text(
             // "SIGEA",
-            'SISTEMA DE GESTIÓN DE ESPACIOS Y ASESORÍAS',
+            'SISTEMA DE GESTIÓN DE SALAS VIRTUALES',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Roboto',
@@ -418,44 +428,6 @@ class MyDrawer extends StatelessWidget {
         child: Column(
           children: [
             headerDrawer(),
-            Divider(color: tercaryRed),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.home, color: tercaryRed),
-              title: const Text(
-                'Inicio',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                this.state!.changeIndexBody(1);
-              },
-            ),
-            Divider(color: tercaryRed),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.add, color: tercaryRed),
-              title: const Text(
-                'Agregar Solicitud',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                Navigator.pushNamed(context, 'add_solicitud');
-              },
-            ),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.history, color: tercaryRed),
-              title: const Text(
-                'Solicitudes realizadas',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                print('object');
-              },
-            ),
 
             Divider(color: tercaryRed),
             tileCerrarSesion(),

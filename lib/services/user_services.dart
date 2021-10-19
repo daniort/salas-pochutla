@@ -8,11 +8,6 @@ class UserServices {
   // final _db = new DataBase();
   final FirebaseDatabase realDB = new FirebaseDatabase();
   DataSnapshot? snap;
-
-  // Future<void> crearNuevoUsuario(Map<String, Object> map) async {
-  //   await realDB.reference().child('users').push().set(map);
-  // }
-
   ResModel resfail = ResModel(success: false, mensaje: 'Algo salió mal.');
 
   Future<void> addUser(Map item) async {
@@ -28,31 +23,37 @@ class UserServices {
   }
 
   Future<ResModel> login(String text, String text2) async {
-    this.snap = await realDB
-        .reference()
-        .child('users')
-        .orderByChild('user')
-        .equalTo(text)
-        .once();
-    if (this.snap!.exists) {
-      Map data = {};
-      this.snap!.value.forEach((key, val) {
-        data = Map.from(val);
-        data['key'] = key;
-      });
-      if (data['firma'] == text2) {
-        return ResModel(success: true, data: UserModel.fromJson(data));
+    try {
+      this.snap = await realDB
+          .reference()
+          .child('users')
+          .orderByChild('user')
+          .equalTo(text)
+          .once();
+      if (this.snap!.exists) {
+        Map data = {};
+        this.snap!.value.forEach((key, val) {
+          data = Map.from(val);
+          data['key'] = key;
+        });
+        if (data['firma'] == text2) {
+          return ResModel(success: true, data: UserModel.fromJson(data));
+        } else {
+          return ResModel(
+            success: false,
+            mensaje: 'Clave inválida.',
+          );
+        }
       } else {
         return ResModel(
           success: false,
-          mensaje: 'Clave inválida.',
+          mensaje: 'Usuario inválido.',
         );
       }
-    } else {
-      return ResModel(
-        success: false,
-        mensaje: 'Usuario inválido.',
-      );
+    } catch (e) {
+      print('ERROR EN LOGIN USER SERVICES');
+      print(e);
+      return resfail;
     }
   }
 
@@ -77,7 +78,6 @@ class UserServices {
         );
       }
     } catch (e) {
-      print("ERROR ");
       print(e);
       return resfail;
     }
@@ -121,6 +121,63 @@ class UserServices {
         mensaje: 'Solicitud realizada',
         success: true,
       );
+    } catch (e) {
+      return resfail;
+    }
+  }
+
+  Future<ResModel> getSalasRegistradas() async {
+    try {
+      List<SolicitudModel> _solicitudes = [];
+      print('HAGAMOS LA PETICION:::::');
+      this.snap = await realDB.reference().child('solicitudes').once();
+
+      print('esto no TERMINA::::');
+
+      if (this.snap!.exists) {
+        this.snap!.value.forEach((key, val) {
+          Map _data = Map.from(val);
+          _data['key'] = key;
+          _solicitudes.add(SolicitudModel.fromJson(_data));
+        });
+        return ResModel(
+          success: true,
+          data: _solicitudes,
+        );
+      } else {
+        return ResModel(
+          success: false,
+          mensaje: 'Áreas no encontradas',
+        );
+      }
+    } catch (e) {
+      print('NO SE ENCUENTRAN SOLICITUDES');
+      print(e);
+      return resfail;
+    }
+  }
+
+  Future<ResModel> getUserData(String keyr) async {
+    try {
+      this.snap = await realDB.reference().child('users').child(keyr).once();
+
+      if (this.snap!.exists) {
+        Map data = {};
+        this.snap!.value.forEach((key, val) {
+          data = Map.from(val);
+          data['key'] = keyr;
+        });
+
+        return ResModel(
+          success: true,
+          data: data,
+        );
+      } else {
+        return ResModel(
+          success: false,
+          data: null,
+        );
+      }
     } catch (e) {
       return resfail;
     }

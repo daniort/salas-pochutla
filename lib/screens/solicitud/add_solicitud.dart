@@ -276,14 +276,16 @@ class _AddSolicitudPageState extends State<AddSolicitudPage> {
                       if (this._formsala.currentState!.validate()) {
                         Map info = {
                           "nombre": this.state!.isUser.nombre,
-                          "sala": this.dropdownSala!.key,
-                          "area": this.dropdownArea!.key,
-                          "hora_inicial": this.timeInicio.toString(),
-                          "hora_final": this.timeFin.toString(),
-                          "fecha": this
-                              ._dateSelected
-                              .millisecondsSinceEpoch
-                              .toString(),
+                          "idsala": this.dropdownSala!.key,
+                          "urlsala": this.dropdownSala!.url,
+                          "idarea": this.dropdownArea!.key,
+                          "sala": this.dropdownSala!.numero,
+                          "area": this.dropdownArea!.area,
+                          "hora_inicial":
+                              "${this.timeInicio.hour}:${this.timeInicio.minute}",
+                          "hora_final":
+                              "${this.timeFin.hour}:${this.timeFin.minute}",
+                          "fecha": this._dateSelected.millisecondsSinceEpoch,
                           "descripcion": this.descripcion.text,
                         };
 
@@ -335,14 +337,6 @@ class _AddSolicitudPageState extends State<AddSolicitudPage> {
             ]),
       ),
     );
-  }
-
-  String fechaBonita(DateTime date) {
-    return "${date.day} / ${date.month} / ${date.year}";
-  }
-
-  String horaBonita(TimeOfDay time) {
-    return "${time.hour}:${time.minute}";
   }
 
   String salaBonita(SalaModel? dro) {

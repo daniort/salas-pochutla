@@ -24,10 +24,20 @@ ThemeData primaryTheme(BuildContext context) {
   return ThemeData(
     primaryColor: primaryRed,
     accentColor: primaryRed,
+    primarySwatch: Colors.red,
+
+    focusColor: Colors.purple,
+    hintColor: Colors.grey,
+    hoverColor: Colors.indigo,
+
+    // canvasColor: Colors.lime,
+
+    // accentColorBrightness: Colors.red,
 
     // primarySwatch: Colors.red,
     colorScheme: ColorScheme.light(
       primary: primaryRed,
     ),
+    cardColor: Colors.green,
   );
 }

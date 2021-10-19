@@ -110,7 +110,7 @@ class _MyBodyState extends State<MyBody> {
             return HomeDocentePage();
         }
       default:
-        return HomeAlumnoPage();
+        return HomeDocentePage();
     }
   }
 }
@@ -132,7 +132,7 @@ class MyDrawer extends StatelessWidget {
       case 'ADMIN':
         return drawerAdmin(context);
       default:
-        return drawerAlumno(context);
+        return drawerDocente(context);
     }
   }
 

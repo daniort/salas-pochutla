@@ -194,4 +194,39 @@ class UserServices {
       return resfail;
     }
   }
+
+  Future<ResModel> getUsers() async {
+    try {
+      DataSnapshot asi = await realDB.reference().child('users').once();
+      if (asi.exists) {
+        List<UserModel> usaurios = [];
+        asi.value.forEach((key, val) {
+          Map _data = Map.from(val);
+          _data['key'] = key;
+          usaurios.add(UserModel.fromJson(_data));
+        });
+        return ResModel(
+          success: true,
+          data: usaurios,
+        );
+      } else {
+        return ResModel(
+          success: false,
+          mensaje: 'Usuarios no encontrados',
+        );
+      }
+    } catch (e) {
+      print(e);
+      return resfail;
+    }
+  }
+
+  Future<ResModel> removeUser(String s) async {
+    try {
+      await realDB.reference().child('users').child(s).remove();
+      return ResModel(success: true, mensaje: "Usuario eliminado");
+    } catch (e) {
+      return resfail;
+    }
+  }
 }

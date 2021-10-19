@@ -165,4 +165,16 @@ class AppState with ChangeNotifier {
       return resfail;
     }
   }
+
+  Future<List<UserModel>> getUsers() async {
+    try {
+      ResModel _res = await UserServices().getUsers();
+      if (_res.success!)
+        return _res.data;
+      else
+        return [];
+    } catch (e) {
+      return [];
+    }
+  }
 }

@@ -18,6 +18,7 @@ Map<String, Widget Function(BuildContext)> rutas(BuildContext context) {
       }
     },
     'add_user': (_) => AddUserPage(),
+    'edit_user': (_) => EditUserPage(),
     'add_sala': (_) => AddSalaPage(),
     'add_solicitud': (_) => AddSolicitudPage(),
     'login': (_) => LoginPage(),

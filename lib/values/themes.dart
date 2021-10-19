@@ -12,6 +12,7 @@ const Color tercaryRed = Color.fromRGBO(152, 101, 118, 1);
 const Color secundaryGreen = Color.fromRGBO(218, 243, 233, 1);
 const Color secundaryGrey = Color.fromRGBO(231, 231, 234, 1);
 const Color secundaryBrown = Color.fromRGBO(171, 154, 152, 1);
+const Color secundaryBlue = Color.fromRGBO(187, 221, 246, 1);
 
 const Color borderGrey = Color.fromRGBO(228, 230, 239, 1);
 const Color backgroudGrey = Color.fromRGBO(248, 249, 252, 1);

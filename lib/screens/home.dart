@@ -19,94 +19,75 @@ class _HomeDocentePageState extends State<HomeDocentePage> {
     print('ESTAMOS EN EL HOME:::::::::::::');
     this.size = MediaQuery.of(context).size;
     this.state = Provider.of<AppState>(context, listen: true);
-
-    // if (this.state!.isUser.cargo! == 'admin') {
-    //   return Scaffold(
-    //     body: Column(
-    //       children: [Text('data')],
-    //     ),
-    //   );
-    // } else
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          this.state!.isLogin
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 20),
-                  child: Text(
-                    'Buenas Tardes, \n' + this.state!.isUser.nombre!,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.bold,
-                        color: textGrey),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 20),
-                  child: Text(
-                    'Salas registradas',
-                    style: TextStyle(
-                        fontSize: 25,
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.bold,
-                        color: textGrey),
-                  ),
-                ),
-          rowSimbologia(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+            child: Text(
+              'Buenas Tardes, \n' + this.state!.isUser.nombre!,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.bold,
+                  color: textGrey),
+            ),
+          ),
           SizedBox(height: 10),
           BodyTable(),
+          rowSimbologia(),
         ],
       ),
     );
   }
 
-  Padding rowSimbologia() {
-    return Padding(
+  Widget rowSimbologia() {
+    return Container(
       padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            // margin: EdgeInsets.all(20),
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: Colors.white,
-                border: Border.all(width: 1)),
-            // child: Icon(Icons.circle, color: Colors.white),
-          ),
-          SizedBox(width: 10),
-          Text("Futuras"),
-          SizedBox(width: 10),
-          Container(
-            // margin: EdgeInsets.all(20),
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: Colors.green[200],
-                border: Border.all(width: 1)),
-            // child: Icon(Icons.circle, color: Colors.white),
-          ),
-          SizedBox(width: 10),
-          Text("Fecha actual"),
-          SizedBox(width: 10),
-          Container(
-            // margin: EdgeInsets.all(20),
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: Colors.grey[400],
-                border: Border.all(width: 1)),
-            // child: Icon(Icons.circle, color: Colors.white),
-          ),
-          SizedBox(width: 10),
-          Text("Pasadas"),
-        ],
+      color: Colors.grey[200],
+      child: SingleChildScrollView(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              // margin: EdgeInsets.all(20),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: Colors.white,
+                  border: Border.all(width: 0.5)),
+              // child: Icon(Icons.circle, color: Colors.white),
+            ),
+            SizedBox(width: 10),
+            Text("Fechas futuras"),
+            SizedBox(width: 10),
+            Container(
+              // margin: EdgeInsets.all(20),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: Colors.green[200],
+                  border: Border.all(width: 0.5)),
+              // child: Icon(Icons.circle, color: Colors.white),
+            ),
+            SizedBox(width: 10),
+            Text("Fecha actual"),
+            SizedBox(width: 10),
+            Container(
+              // margin: EdgeInsets.all(20),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: Colors.grey[400],
+                  border: Border.all(width: 0.5)),
+              // child: Icon(Icons.circle, color: Colors.white),
+            ),
+            SizedBox(width: 10),
+            Text("Fechas pasadas"),
+          ],
+        ),
       ),
     );
   }
@@ -135,88 +116,80 @@ class BodyTable extends StatelessWidget {
                   child: Text('No hay salas apartadas'),
                 ),
               );
-
-            print(_solicitudes[0].horaFinal);
+            // _solicitudes.sort((a,b));
+            _solicitudes.sort((a, b) => b.fecha!.millisecondsSinceEpoch
+                .compareTo(a.fecha!.millisecondsSinceEpoch));
 
             return Expanded(
-              child: ListView(
-                children: [
-                  for (SolicitudModel item in _solicitudes)
-                    Container(
-                      color: colorTime(item.fecha!),
-                      margin: EdgeInsets.symmetric(horizontal: 15),
-                      padding: EdgeInsets.symmetric(vertical: 5),
-                      child: ExpansionTile(
-                        // backgroundColor: secundaryGrey,
-                        backgroundColor: colorTime(item.fecha!),
-                        collapsedTextColor: primaryGrey,
-                        textColor: primaryBlack,
-                        // initiallyExpanded: true,
-                        // leading: Icon(Icons.circle),
-                        title: Text(item.nombre!),
-                        subtitle: Row(
-                          children: [
-                            // Container(
-                            //   // margin: EdgeInsets.all(20),
-                            //   padding: EdgeInsets.all(10),
-                            //   decoration: BoxDecoration(
-                            //       borderRadius: BorderRadius.circular(100),
-                            //       color: colorTime(item.fecha!),
-                            //       border: Border.all(width: 0.5)),
-                            //   // child: Icon(Icons.circle, color: Colors.white),
-                            // ),
-                            // SizedBox(width: 5),
-                            Text('Sala: ' + item.sala!.toString()),
-                          ],
-                        ),
-                        children: [
-                          ListTile(
-                            onTap: () async {
-                              if (item.urlSala == null) {
-                                await launch(
-                                  item.urlSala!,
-                                  forceSafariVC: false,
-                                  forceWebView: false,
-                                );
-                              }
-                            },
-                            leading: Icon(Icons.video_call),
-                            title: Text(item.urlSala!),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.group),
-                            title: Text(item.area!),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.access_time),
-                            title: Text(horaBonita(TimeOfDay(
-                                hour:
-                                    int.parse(item.horaInicial!.split(":")[0]),
-                                minute: int.parse(
-                                    item.horaInicial!.split(":")[1])))),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.access_time_filled),
-                            title: Text(horaBonita(TimeOfDay(
-                                hour: int.parse(item.horaFinal!.split(":")[0]),
-                                minute:
-                                    int.parse(item.horaFinal!.split(":")[1])))),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.calendar_today),
-                            title: Text(fechaBonita(item.fecha!)),
-                          ),
-                          ListTile(
-                            // leading: Icon(Icons.access_time_filled),
-                            title: Text('Descripción:'),
-                            subtitle: Text(item.descripcion!),
-                          ),
-                        ],
+                child: ListView.builder(
+              itemCount: _solicitudes.length,
+              itemBuilder: (BuildContext context, int index) {
+                SolicitudModel item = _solicitudes[index];
+                return Container(
+                  color: colorTime(item.fecha!),
+                  margin: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  child: ExpansionTile(
+                    backgroundColor: colorTime(item.fecha!),
+                    collapsedTextColor: primaryGrey,
+                    textColor: primaryBlack,
+                    title: Text(item.nombre!),
+                    subtitle: Text('Sala: ' + item.sala!.toString()),
+                    children: [
+                      ListTile(
+                        onTap: () async {
+                          String _url = item.urlSala ?? '';
+
+                          try {
+                            if (await canLaunch(_url)) {
+                              print(
+                                  'ABRIENDO URL.......'); // chrome no jala en el emulador
+                              await launch(
+                                _url,
+                                forceSafariVC: false,
+                                universalLinksOnly: true,
+                              );
+                            } else {
+                              throw 'Could not launch $_url';
+                            }
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        leading: Icon(Icons.video_call),
+                        title: Text(item.urlSala!),
                       ),
-                    ),
-                ],
-              ),
-            );
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text(item.area!),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.access_time),
+                        title: Text(horaBonita(TimeOfDay(
+                            hour: int.parse(item.horaInicial!.split(":")[0]),
+                            minute:
+                                int.parse(item.horaInicial!.split(":")[1])))),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.access_time_filled),
+                        title: Text(horaBonita(TimeOfDay(
+                            hour: int.parse(item.horaFinal!.split(":")[0]),
+                            minute: int.parse(item.horaFinal!.split(":")[1])))),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.calendar_today),
+                        title: Text(fechaBonita(item.fecha!)),
+                      ),
+                      ListTile(
+                        // leading: Icon(Icons.access_time_filled),
+                        title: Text('Descripción:'),
+                        subtitle: Text(item.descripcion!),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ));
 
           default:
             return TextFormField(
@@ -230,21 +203,27 @@ class BodyTable extends StatelessWidget {
 
   colorTime(DateTime da) {
     Color cor = Colors.white;
-    Duration diferencia = DateTime.now().difference(da);
+    DateTime hoy = DateTime.now();
+    if (da.year > hoy.year) {
+      cor = Colors.white;
+    } else if (da.year < hoy.year) {
+      cor = Colors.grey;
+    } else if (da.year == hoy.year) {
+      if (da.month > hoy.month) {
+        cor = Colors.white;
+      } else if (da.month < hoy.month) {
+        cor = Colors.grey;
+      } else if (da.month == hoy.month) {
+        if (da.day > hoy.day) {
+          cor = Colors.white;
+        } else if (da.day < hoy.day) {
+          cor = Colors.grey;
+        } else if (da.day == hoy.day) {
+          cor = secundaryGreen;
+        }
+      }
+    }
 
-    // print('fecha resultante');
-    // print(da.millisecondsSinceEpoch);
-    // print(diferencia.inDays);
-
-    if (diferencia.inDays == 0) {
-      cor = Colors.green[100]!;
-    }
-    if (diferencia.inDays > 0) {
-      cor = Colors.grey[200]!;
-    }
-    if (diferencia.inDays < 0) {
-      cor = backgroudGrey;
-    }
     return cor;
   }
 }

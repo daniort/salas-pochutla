@@ -251,6 +251,8 @@ class _AddSolicitudPageState extends State<AddSolicitudPage> {
                   SizedBox(width: 10),
                   ElevatedButton(
                     style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(primaryRed),
                       padding: MaterialStateProperty.all<EdgeInsets>(
                         EdgeInsets.symmetric(horizontal: 50),
                       ),
@@ -289,7 +291,8 @@ class _AddSolicitudPageState extends State<AddSolicitudPage> {
                           "descripcion": this.descripcion.text,
                         };
 
-                        ResModel _res = await this.state!.solicitarArea(info);
+                        ResModel _res = await this.state!.solicitarArea(info,
+                            this._dateSelected, this.timeInicio, this.timeFin);
 
                         if (_res.success!) {
                           snack(context, 'Solicitud Aprobada', secundaryGreen);

@@ -29,6 +29,6 @@ ThemeData primaryTheme(BuildContext context) {
     highlightColor: Colors.indigo,
     focusColor: Colors.purple,
     hintColor: Colors.grey,
-    cardColor: Colors.green,
+    // cardColor: Colors.green,
   );
 }

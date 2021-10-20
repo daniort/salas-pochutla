@@ -45,10 +45,10 @@ class Home extends StatelessWidget {
     return Scaffold(
         drawer: MyDrawer(),
         appBar: AppBar(
-          title: Text(
-            'SALAS',
-            style: TextStyle(fontFamily: 'Roboto'),
-          ),
+          // title: Text(
+          //   'SALAS',
+          //   style: TextStyle(fontFamily: 'Roboto'),
+          // ),
           actions: [
             // IconButton(
             //     onPressed: () async {
@@ -59,7 +59,9 @@ class Home extends StatelessWidget {
             //     icon: Icon(Icons.add)),
             if (this.state!.isLogin)
               Center(
-                child: Text(this.state!.isUser.cargo ?? ''),
+                child: Text(
+                  this.state!.isUser.cargo!.toUpperCase(),
+                ),
               ),
             if (this.state!.isLogin)
               Padding(
@@ -251,22 +253,20 @@ class MyDrawer extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            Divider(color: tercaryRed),
             ListTile(
               dense: true,
               focusColor: Colors.yellow,
-              leading: Icon(Icons.login, color: tercaryRed),
+              leading: Icon(Icons.add, color: tercaryRed),
               title: const Text(
-                'Iniciar Sesíon',
+                'Agregar Solicitud',
                 style: styleDrawer,
               ),
               onTap: () {
-                Navigator.pushNamed(context, 'login');
-                // Naviagr
-                //   Navigator.pushNamedAndRemoveUntil(
-                //       context, 'add_user', (route) => false);
+                Navigator.pushNamed(context, 'add_solicitud');
               },
             ),
+            Divider(color: tercaryRed),
+            tileCerrarSesion(),
             Expanded(child: SizedBox()),
             btnClose(context),
             SizedBox(height: 50),
@@ -324,66 +324,7 @@ class MyDrawer extends StatelessWidget {
               },
             ),
             Divider(color: tercaryRed),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.add, color: tercaryRed),
-              title: const Text(
-                'Agregar Solicitud',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                print('object');
-              },
-            ),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.history, color: tercaryRed),
-              title: const Text(
-                'Solicitudes realizadas',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                print('object');
-              },
-            ),
-            Divider(color: tercaryRed),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.person, color: tercaryRed),
-              title: const Text(
-                'Usuarios',
-                style: styleDrawer,
-              ),
-              onTap: () {},
-            ),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.location_city, color: tercaryRed),
-              title: const Text(
-                'Espacios',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                print('object');
-              },
-            ),
-            Divider(color: tercaryRed),
-            ListTile(
-              dense: true,
-              focusColor: Colors.yellow,
-              leading: Icon(Icons.exit_to_app, color: tercaryRed),
-              title: const Text(
-                'Cerrar Sesíon',
-                style: styleDrawer,
-              ),
-              onTap: () {
-                print('object');
-              },
-            ),
+            tileCerrarSesion(),
             Expanded(child: SizedBox()),
             InkWell(
               onTap: () {

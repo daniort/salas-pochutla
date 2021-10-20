@@ -20,7 +20,7 @@ class UserModel {
   factory UserModel.fromJson(Map<dynamic, dynamic> json) => UserModel(
       cargo: json["cargo"],
       nombre: json["nombre"],
-      contrasea: json["contraseña"],
+      contrasea: json["firma"],
       user: json['user'],
       key: json['key']);
 

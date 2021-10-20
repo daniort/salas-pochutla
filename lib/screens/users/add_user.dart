@@ -24,6 +24,8 @@ class _AddUserPageState extends State<AddUserPage> {
   void dispose() {
     this.nombreController.dispose();
     this.cargoController.dispose();
+    this.usernameController.dispose();
+    this.passController.dispose();
     super.dispose();
   }
 
@@ -99,7 +101,7 @@ class _AddUserPageState extends State<AddUserPage> {
                   if (val!.isEmpty) {
                     return 'Debe ingresar una contraseña';
                   }
-                  if (val!.length < 8) {
+                  if (val.length < 8) {
                     return 'La contraseña es muy corta.';
                   }
                 },

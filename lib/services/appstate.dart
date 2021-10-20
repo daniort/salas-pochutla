@@ -109,10 +109,12 @@ class AppState with ChangeNotifier {
     }
   }
 
-  Future<ResModel> solicitarArea(Map info) async {
+  Future<ResModel> solicitarArea(Map info, DateTime dateSelected,
+      TimeOfDay timeInicio, TimeOfDay timeFin) async {
     try {
       onLoading();
-      ResModel _res = await UserServices().solicitarSala(info);
+      ResModel _res = await UserServices()
+          .solicitarSala(info, dateSelected, timeInicio, timeFin);
       offLoading();
       return _res;
     } catch (e) {
@@ -182,6 +184,18 @@ class AppState with ChangeNotifier {
     try {
       onLoading();
       ResModel _res = await UserServices().addNuevaUser(info);
+      offLoading();
+      return _res;
+    } catch (e) {
+      offLoading();
+      return resfail;
+    }
+  }
+
+  Future<ResModel> editarUsuario(Map<String, dynamic> info, String key) async {
+    try {
+      onLoading();
+      ResModel _res = await UserServices().updateUser(info, key);
       offLoading();
       return _res;
     } catch (e) {

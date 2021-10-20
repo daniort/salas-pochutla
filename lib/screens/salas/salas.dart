@@ -49,20 +49,100 @@ class _SalasPageState extends State<SalasPage> {
                     ),
                   ),
                   for (SalaModel sala in _salas)
-                    ListTile(
+                    ExpansionTile(
                       title: Text('SALA ' + sala.numero.toString()),
                       subtitle: Text(sala.url!),
-                      trailing: Icon(Icons.open_in_new, color: Colors.grey),
-                      onTap: () async {
-                        String _url = sala.url ?? '';
-                        if (await canLaunch(_url)) {
-                          await launch(
-                            _url,
-                            forceSafariVC: false,
-                            universalLinksOnly: true,
-                          );
-                        }
-                      },
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(width: 10),
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        primaryGrey),
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.symmetric(horizontal: 10),
+                                ),
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Eliminar sala'),
+                                        content: Text(
+                                            'Está seguro de eliminar la Sala ' +
+                                                sala.numero!.toString()),
+                                        actions: [
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(primaryGrey),
+                                              padding: MaterialStateProperty
+                                                  .all<EdgeInsets>(
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              'Cancelar',
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            child: Text('Eliminar'),
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(primaryRed),
+                                              padding: MaterialStateProperty
+                                                  .all<EdgeInsets>(
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10),
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              ResModel res =
+                                                  await UserServices()
+                                                      .removeSala(sala.key!);
+
+                                              Navigator.pop(context);
+                                              snack(
+                                                context,
+                                                res.mensaje!,
+                                                res.success!
+                                                    ? secundaryGreen
+                                                    : secundaryRed,
+                                              );
+                                              setState(() {});
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    });
+                              },
+                              child: Text('Eliminar'),
+                            ),
+                            SizedBox(width: 20)
+                          ],
+                        )
+                      ],
+
+                      // onTap: () async {
+                      //   String _url = sala.url ?? '';
+                      //   if (await canLaunch(_url)) {
+                      //     await launch(
+                      //       _url,
+                      //       forceSafariVC: false,
+                      //       universalLinksOnly: true,
+                      //     );
+                      //   }
+                      // },
                     ),
                 ],
               );

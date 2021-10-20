@@ -109,18 +109,68 @@ class UserServices {
     }
   }
 
-  Future<ResModel> solicitarSala(Map info) async {
+  Future<ResModel> solicitarSala(
+      Map info, DateTime date, TimeOfDay ini, TimeOfDay fin) async {
     try {
-      // TRAEMOS TODOS LOS REGISTROS DE SOLICTUDES QUE SEAN DE LA MISMA SALA
-      // COTEJAMOS QUE LA FECHA Y LA HORA NO SEA IGUAL
+      this.snap = await realDB
+          .reference()
+          .child('solicitudes')
+          .orderByChild('idsala')
+          .equalTo(info['idsala'])
+          .once();
 
-      // SI NO INTERFIERE, LO AGREGAMOS
+      List<SolicitudModel> _sol = [];
 
-      await realDB.reference().child('solicitudes').push().set(info);
-      return ResModel(
-        mensaje: 'Solicitud realizada',
-        success: true,
-      );
+      this.snap!.value.forEach((key, val) {
+        Map _data = Map.from(val);
+        _data['key'] = key;
+        _sol.add(SolicitudModel.fromJson(_data));
+      });
+
+      bool _permiso = false;
+      TimeOfDay fini = ini;
+      TimeOfDay ffin = fin;
+
+      for (SolicitudModel soli in _sol) {
+        if (soli.fecha!.year == date.year &&
+            soli.fecha!.month == date.month &&
+            soli.fecha!.day == date.month) {
+          fini = TimeOfDay(
+              hour: int.parse(soli.horaInicial!.split(":")[0]),
+              minute: int.parse(soli.horaInicial!.split(":")[1]));
+          ffin = TimeOfDay(
+              hour: int.parse(soli.horaFinal!.split(":")[0]),
+              minute: int.parse(soli.horaFinal!.split(":")[1]));
+
+          if (fini.hour > ini.hour) {
+            if (ffin.hour > fin.hour) {
+              _permiso = true;
+            } else {
+              _permiso = false;
+            }
+          } else if (ffin.hour > ini.hour) {
+            _permiso = false;
+          } else {
+            _permiso = true;
+          }
+
+          if (fini.hour == ini.hour) {
+            _permiso = false;
+          }
+        }
+      }
+
+      if (_permiso) {
+        await realDB.reference().child('solicitudes').push().set(info);
+        return ResModel(
+          mensaje: 'Solicitud realizada',
+          success: true,
+        );
+      } else {
+        return ResModel(
+            success: false,
+            mensaje: 'Esta sala estará ocupada en la hora seleccionada.');
+      }
     } catch (e) {
       return resfail;
     }
@@ -129,10 +179,7 @@ class UserServices {
   Future<ResModel> getSalasRegistradas() async {
     try {
       List<SolicitudModel> _solicitudes = [];
-      print('HAGAMOS LA PETICION:::::');
       this.snap = await realDB.reference().child('solicitudes').once();
-
-      print('esto no TERMINA::::');
 
       if (this.snap!.exists) {
         this.snap!.value.forEach((key, val) {
@@ -185,11 +232,24 @@ class UserServices {
 
   Future<ResModel> addNuevaSala(Map info) async {
     try {
-      await realDB.reference().child('salas').push().set(info);
-      return ResModel(
-        mensaje: 'Sala agregada',
-        success: true,
-      );
+      DataSnapshot asi = await realDB
+          .reference()
+          .child('salas')
+          .orderByChild('numero')
+          .equalTo(info['numero'])
+          .once();
+      if (asi.exists) {
+        return ResModel(
+          mensaje: "Ya existe una Sala ${info['numero']}",
+          success: false,
+        );
+      } else {
+        await realDB.reference().child('salas').push().set(info);
+        return ResModel(
+          mensaje: 'Sala agregada',
+          success: true,
+        );
+      }
     } catch (e) {
       return resfail;
     }
@@ -237,6 +297,27 @@ class UserServices {
         mensaje: 'Usuario agregado',
         success: true,
       );
+    } catch (e) {
+      return resfail;
+    }
+  }
+
+  Future<ResModel> updateUser(Map<String, dynamic> info, String key) async {
+    try {
+      await realDB.reference().child('users').child(key).update(info);
+      return ResModel(
+        mensaje: 'Usuario actualizado',
+        success: true,
+      );
+    } catch (e) {
+      return resfail;
+    }
+  }
+
+  Future<ResModel> removeSala(String s) async {
+    try {
+      await realDB.reference().child('salas').child(s).remove();
+      return ResModel(success: true, mensaje: "Sala eliminada");
     } catch (e) {
       return resfail;
     }

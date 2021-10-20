@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sigea/models/models.dart';
+import 'package:sigea/screens/screens.dart';
 import 'package:sigea/services/services.dart';
 import 'package:sigea/values/values.dart';
 
@@ -47,13 +48,13 @@ class _UsuariosPageState extends State<UsuariosPage> {
                           color: textGrey),
                     ),
                   ),
-                  for (UserModel sala in _users)
+                  for (UserModel _user in _users)
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 5),
                       child: ExpansionTile(
                         // initiallyExpanded: true,
-                        title: Text(sala.nombre!),
-                        subtitle: Text(sala.cargo!),
+                        title: Text(_user.nombre!),
+                        subtitle: Text(_user.cargo!),
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -69,7 +70,12 @@ class _UsuariosPageState extends State<UsuariosPage> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, 'edit_user');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditUserPage(user: _user)),
+                                  );
                                 },
                                 child: Text('Editar'),
                               ),
@@ -92,7 +98,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                                           title: Text('Eliminar usuario'),
                                           content: Text(
                                             'Está seguro de eliminar el usuario: \n' +
-                                                sala.nombre!,
+                                                _user.nombre!,
                                           ),
                                           actions: [
                                             ElevatedButton(
@@ -128,7 +134,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                                               onPressed: () async {
                                                 ResModel res =
                                                     await UserServices()
-                                                        .removeUser(sala.key!);
+                                                        .removeUser(_user.key!);
 
                                                 Navigator.pop(context);
                                                 snack(

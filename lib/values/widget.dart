@@ -12,13 +12,11 @@ String fechaBonita(DateTime date) {
 void snack(BuildContext context, String? mensaje, Color col) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text(
-        mensaje!,
-        style: TextStyle(
-          color: textRed,
-        ),
-      ),
       backgroundColor: col,
+      content: Text(
+        mensaje ?? '',
+        style: TextStyle(color: textGrey),
+      ),
     ),
   );
 }

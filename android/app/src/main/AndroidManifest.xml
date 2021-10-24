@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tecnm.pochutla.sigea">
+    <uses-permission android:name="android.permission.INTERNET" />
+
    <application
         android:label="sigea"
         android:icon="@mipmap/ic_launcher">

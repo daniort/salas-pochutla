@@ -21,6 +21,11 @@ const Color textGrey = Color.fromRGBO(91, 92, 104, 1);
 const Color textRed = Color.fromRGBO(108, 35, 59, 1);
 const Color textGreyLigth = Color.fromRGBO(133, 135, 149, 1);
 
+const Color future = Colors.white;
+const Color curso = Color.fromRGBO(95, 197, 143, 1);
+const Color actual = Color.fromRGBO(217, 243, 232, 1);
+const Color pasada = Color.fromRGBO(231, 231, 234, 1);
+
 ThemeData primaryTheme(BuildContext context) {
   return ThemeData(
     primaryColor: primaryRed,

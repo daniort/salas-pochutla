@@ -53,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 20),
               TextFormField(
                 controller: pass,
+                obscureText: true,
                 decoration: inputDecora('Clave'),
                 validator: (String? val) {
                   if (val!.isEmpty) return 'Ingrese su clave';

@@ -166,6 +166,7 @@ class _AddSolicitudPageState extends State<AddSolicitudPage> {
                 onTap: () async {
                   TimeOfDay? pic = await _selectTime(context, this.timeInicio);
                   if (pic != null) {
+                    print(pic.hourOfPeriod);
                     this.timeInicio = pic;
                     setState(() {});
                   }
@@ -233,77 +234,104 @@ class _AddSolicitudPageState extends State<AddSolicitudPage> {
               ),
               SizedBox(height: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(primaryGrey),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.symmetric(horizontal: 10),
+                  SizedBox(
+                    width: this.size!.width * 0.40,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(primaryGrey),
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                          EdgeInsets.symmetric(horizontal: 10),
+                        ),
                       ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Cancelar'),
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Cancelar'),
                   ),
                   SizedBox(width: 10),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(primaryRed),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.symmetric(horizontal: 50),
+                  SizedBox(
+                    width: this.size!.width * 0.40,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(primaryRed),
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                          EdgeInsets.symmetric(horizontal: 50),
+                        ),
                       ),
-                    ),
-                    onPressed: () async {
-                      if (this.dropdownSala == null) {
-                        snack(context, 'Debes seleccionar una sala',
-                            secundaryRed);
-                        return;
-                      }
-                      if (this.dropdownArea == null) {
-                        snack(
-                            context, 'Debes seleccionar un área', secundaryRed);
-                        return;
-                      }
-
-                      print(this.timeFin.hour.compareTo(this.timeFin.hour));
-                      if (!horasValidas(this.timeFin, this.timeFin.hour)) {
-                        snack(context, 'Solo puedes apartar 2 horas máximo.',
-                            secundaryRed);
-                        return;
-                      }
-                      if (this._formsala.currentState!.validate()) {
-                        Map info = {
-                          "nombre": this.state!.isUser.nombre,
-                          "idsala": this.dropdownSala!.key,
-                          "urlsala": this.dropdownSala!.url,
-                          "idarea": this.dropdownArea!.key,
-                          "sala": this.dropdownSala!.numero,
-                          "area": this.dropdownArea!.area,
-                          "hora_inicial":
-                              "${this.timeInicio.hour}:${this.timeInicio.minute}",
-                          "hora_final":
-                              "${this.timeFin.hour}:${this.timeFin.minute}",
-                          "fecha": this._dateSelected.millisecondsSinceEpoch,
-                          "descripcion": this.descripcion.text,
-                        };
-
-                        ResModel _res = await this.state!.solicitarArea(info,
-                            this._dateSelected, this.timeInicio, this.timeFin);
-
-                        if (_res.success!) {
-                          snack(context, 'Solicitud Aprobada', secundaryGreen);
-                          Navigator.pop(context);
-                        } else {
-                          snack(context, _res.mensaje!, secundaryRed);
+                      onPressed: () async {
+                        if (this.dropdownSala == null) {
+                          snack(context, 'Debes seleccionar una sala',
+                              secundaryRed);
+                          return;
                         }
-                      }
-                    },
-                    child:
-                        this.state!.isLoading ? spinner() : Text('Solicitar'),
+                        if (this.dropdownArea == null) {
+                          snack(context, 'Debes seleccionar un área',
+                              secundaryRed);
+                          return;
+                        }
+
+                        print(this.timeFin.hour.compareTo(this.timeFin.hour));
+                        if (!horasValidas(this.timeFin, this.timeFin.hour)) {
+                          snack(context, 'Solo puedes apartar 2 horas máximo.',
+                              secundaryRed);
+                          return;
+                        }
+                        DateTime hoy = DateTime.now();
+
+                        print(hoy);
+                        print(this._dateSelected);
+
+                        if (hoy.year == this._dateSelected.year &&
+                            hoy.month == this._dateSelected.month &&
+                            hoy.day == this._dateSelected.day) {
+                          print('SI ES HOY!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                          print(horasActual(this.timeInicio));
+                          if (!horasActual(this.timeInicio)) {
+                            snack(context, 'Seleciona una hora válida.',
+                                secundaryRed);
+                            return;
+                          }
+                        }
+
+                        if (this._formsala.currentState!.validate()) {
+                          Map info = {
+                            "nombre": this.state!.isUser.nombre,
+                            "idsala": this.dropdownSala!.key,
+                            "urlsala": this.dropdownSala!.url,
+                            "idarea": this.dropdownArea!.key,
+                            "sala": this.dropdownSala!.numero,
+                            "area": this.dropdownArea!.area,
+                            "hora_inicial":
+                                "${this.timeInicio.hour}:${this.timeInicio.minute}",
+                            "hora_final":
+                                "${this.timeFin.hour}:${this.timeFin.minute}",
+                            "fecha": this._dateSelected.millisecondsSinceEpoch,
+                            "descripcion": this.descripcion.text,
+                          };
+
+                          ResModel _res = await this.state!.solicitarArea(
+                              info,
+                              this._dateSelected,
+                              this.timeInicio,
+                              this.timeFin);
+
+                          if (_res.success!) {
+                            snack(
+                                context, 'Solicitud Aprobada', secundaryGreen);
+                            Navigator.pop(context);
+                          } else {
+                            snack(context, _res.mensaje!, secundaryRed);
+                          }
+                        }
+                      },
+                      child:
+                          this.state!.isLoading ? spinner() : Text('Solicitar'),
+                    ),
                   ),
                 ],
               ),
@@ -374,5 +402,24 @@ class _AddSolicitudPageState extends State<AddSolicitudPage> {
         return true;
     } else
       return false;
+  }
+
+  bool horasActual(TimeOfDay time) {
+    DateTime hoy = DateTime.now();
+
+    if (time.hour == hoy.hour) {
+      print('ES A LA MISMA HORA');
+      if (time.minute > hoy.minute) {
+        print('el minuto es mayor');
+
+        return true;
+      } else {
+        return false;
+      }
+    } else if (time.hour > hoy.hour) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

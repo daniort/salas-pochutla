@@ -160,6 +160,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                         // trailing: Icon(Icons.open_in_new, color: Colors.grey),
                       ),
                     ),
+                  SizedBox(height: 80),
                 ],
               );
 

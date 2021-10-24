@@ -132,18 +132,8 @@ class _SalasPageState extends State<SalasPage> {
                           ],
                         )
                       ],
-
-                      // onTap: () async {
-                      //   String _url = sala.url ?? '';
-                      //   if (await canLaunch(_url)) {
-                      //     await launch(
-                      //       _url,
-                      //       forceSafariVC: false,
-                      //       universalLinksOnly: true,
-                      //     );
-                      //   }
-                      // },
                     ),
+                  SizedBox(height: 80),
                 ],
               );
 

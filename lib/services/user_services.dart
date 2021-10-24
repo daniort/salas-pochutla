@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:sigea/models/models.dart';
@@ -118,46 +120,48 @@ class UserServices {
           .orderByChild('idsala')
           .equalTo(info['idsala'])
           .once();
-
+      print('PASO 0');
       List<SolicitudModel> _sol = [];
 
-      this.snap!.value.forEach((key, val) {
-        Map _data = Map.from(val);
-        _data['key'] = key;
-        _sol.add(SolicitudModel.fromJson(_data));
-      });
-
+      print('PASO 1');
+      print('PASO 3');
       bool _permiso = false;
-      TimeOfDay fini = ini;
-      TimeOfDay ffin = fin;
 
-      for (SolicitudModel soli in _sol) {
-        if (soli.fecha!.year == date.year &&
-            soli.fecha!.month == date.month &&
-            soli.fecha!.day == date.month) {
-          fini = TimeOfDay(
-              hour: int.parse(soli.horaInicial!.split(":")[0]),
-              minute: int.parse(soli.horaInicial!.split(":")[1]));
-          ffin = TimeOfDay(
-              hour: int.parse(soli.horaFinal!.split(":")[0]),
-              minute: int.parse(soli.horaFinal!.split(":")[1]));
+      if (this.snap!.exists) {
+        this.snap!.value.forEach((key, val) {
+          print('PASO 2');
+          try {
+            Map _data = Map.from(val);
+            _data['key'] = key;
+            _sol.add(SolicitudModel.fromJson(_data));
+          } catch (e) {
+            print('ERROR EN ESTE TRY :::777776766666660000000......:::::: ');
+            print(e);
+          }
+          for (SolicitudModel soli in _sol) {
+            if (soli.fecha!.year == date.year &&
+                soli.fecha!.month == date.month &&
+                soli.fecha!.day == date.month) {
+              if (soli.horaInicial!.hour > ini.hour) {
+                if (soli.horaFinal!.hour > fin.hour) {
+                  _permiso = true;
+                } else {
+                  _permiso = false;
+                }
+              } else if (soli.horaFinal!.hour > ini.hour) {
+                _permiso = false;
+              } else {
+                _permiso = true;
+              }
 
-          if (fini.hour > ini.hour) {
-            if (ffin.hour > fin.hour) {
-              _permiso = true;
-            } else {
-              _permiso = false;
+              if (soli.horaInicial!.hour == ini.hour) {
+                _permiso = false;
+              }
             }
-          } else if (ffin.hour > ini.hour) {
-            _permiso = false;
-          } else {
-            _permiso = true;
           }
-
-          if (fini.hour == ini.hour) {
-            _permiso = false;
-          }
-        }
+        });
+      } else {
+        _permiso = true;
       }
 
       if (_permiso) {
@@ -172,6 +176,7 @@ class UserServices {
             mensaje: 'Esta sala estará ocupada en la hora seleccionada.');
       }
     } catch (e) {
+      print(e);
       return resfail;
     }
   }

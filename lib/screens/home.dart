@@ -24,18 +24,8 @@ class _HomeDocentePageState extends State<HomeDocentePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
-            child: Text(
-              'Buenas Tardes, \n' + this.state!.isUser.nombre!,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Roboto',
-                  fontWeight: FontWeight.bold,
-                  color: textGrey),
-            ),
-          ),
-          SizedBox(height: 10),
+          saludoTitle(this.state!.isUser.nombre!, this.state!.isUser.cargo!),
+          // Divider(),
           BodyTable(),
           rowSimbologia(),
         ],
@@ -52,40 +42,44 @@ class _HomeDocentePageState extends State<HomeDocentePage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Container(
-              // margin: EdgeInsets.all(20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
                   color: Colors.white,
                   border: Border.all(width: 0.5)),
-              // child: Icon(Icons.circle, color: Colors.white),
             ),
             SizedBox(width: 10),
-            Text("Fechas futuras"),
+            Text("Futuras"),
             SizedBox(width: 10),
             Container(
-              // margin: EdgeInsets.all(20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  color: Colors.green[200],
+                  color: future,
                   border: Border.all(width: 0.5)),
-              // child: Icon(Icons.circle, color: Colors.white),
             ),
             SizedBox(width: 10),
-            Text("Fecha actual"),
+            Text("En curso"),
             SizedBox(width: 10),
             Container(
-              // margin: EdgeInsets.all(20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  color: Colors.grey[400],
+                  color: curso,
                   border: Border.all(width: 0.5)),
-              // child: Icon(Icons.circle, color: Colors.white),
             ),
             SizedBox(width: 10),
-            Text("Fechas pasadas"),
+            Text("Actual"),
+            SizedBox(width: 10),
+            Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: pasada,
+                  border: Border.all(width: 0.5)),
+            ),
+            SizedBox(width: 10),
+            Text("Pasadas"),
           ],
         ),
       ),
@@ -112,11 +106,9 @@ class BodyTable extends StatelessWidget {
             if (_solicitudes.isEmpty)
               return Expanded(
                 child: Center(
-                  // enabled: false,
                   child: Text('No hay salas apartadas'),
                 ),
               );
-            // _solicitudes.sort((a,b));
             _solicitudes.sort((a, b) => b.fecha!.millisecondsSinceEpoch
                 .compareTo(a.fecha!.millisecondsSinceEpoch));
 
@@ -126,11 +118,13 @@ class BodyTable extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 SolicitudModel item = _solicitudes[index];
                 return Container(
-                  color: colorTime(item.fecha!),
+                  color:
+                      colorTime(item.fecha!, item.horaInicial, item.horaFinal),
                   margin: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
                   padding: EdgeInsets.symmetric(vertical: 5),
                   child: ExpansionTile(
-                    backgroundColor: colorTime(item.fecha!),
+                    backgroundColor: colorTime(
+                        item.fecha!, item.horaInicial, item.horaFinal),
                     collapsedTextColor: primaryGrey,
                     textColor: primaryBlack,
                     title: Text(item.nombre!),
@@ -165,16 +159,11 @@ class BodyTable extends StatelessWidget {
                       ),
                       ListTile(
                         leading: Icon(Icons.access_time),
-                        title: Text(horaBonita(TimeOfDay(
-                            hour: int.parse(item.horaInicial!.split(":")[0]),
-                            minute:
-                                int.parse(item.horaInicial!.split(":")[1])))),
+                        title: Text(horaBonita(item.horaInicial!)),
                       ),
                       ListTile(
                         leading: Icon(Icons.access_time_filled),
-                        title: Text(horaBonita(TimeOfDay(
-                            hour: int.parse(item.horaFinal!.split(":")[0]),
-                            minute: int.parse(item.horaFinal!.split(":")[1])))),
+                        title: Text(horaBonita(item.horaFinal!)),
                       ),
                       ListTile(
                         leading: Icon(Icons.calendar_today),
@@ -201,25 +190,35 @@ class BodyTable extends StatelessWidget {
     );
   }
 
-  colorTime(DateTime da) {
-    Color cor = Colors.white;
+  colorTime(DateTime da, TimeOfDay? horaInicial, TimeOfDay? horaFinal) {
+    Color cor = future;
     DateTime hoy = DateTime.now();
     if (da.year > hoy.year) {
-      cor = Colors.white;
+      cor = future;
     } else if (da.year < hoy.year) {
-      cor = Colors.grey;
+      cor = pasada;
     } else if (da.year == hoy.year) {
       if (da.month > hoy.month) {
-        cor = Colors.white;
+        cor = future;
       } else if (da.month < hoy.month) {
-        cor = Colors.grey;
+        cor = pasada;
       } else if (da.month == hoy.month) {
         if (da.day > hoy.day) {
-          cor = Colors.white;
+          cor = future;
         } else if (da.day < hoy.day) {
-          cor = Colors.grey;
+          cor = pasada;
         } else if (da.day == hoy.day) {
-          cor = secundaryGreen;
+          cor = actual; //ES hoy, es hoy
+
+          if (horaInicial!.hour <= hoy.hour && horaFinal!.hour >= hoy.hour) {
+            // if (horaFinal) {
+
+            // }
+            // if (horaInicial.minute <= hoy.minute &&
+            //     horaFinal.minute >= hoy.minute) {
+            cor = curso;
+            // }
+          }
         }
       }
     }
@@ -253,6 +252,7 @@ class _HomeAlumnoPageState extends State<HomeAlumnoPage> {
               return spinner();
             case ConnectionState.done:
               List<SalaModel> _salas = snapshot.data ?? [];
+              _salas.sort((a, b) => a.numero!.compareTo(b.numero!));
 
               return GridView.count(
                 primary: false,
@@ -265,19 +265,12 @@ class _HomeAlumnoPageState extends State<HomeAlumnoPage> {
                     GestureDetector(
                       onTap: () async {
                         String _url = item.url ?? '';
-
                         try {
-                          if (await canLaunch(_url)) {
-                            print(
-                                'ABRIENDO URL.......'); // chrome no jala en el emulador
-                            await launch(
-                              _url,
-                              forceSafariVC: false,
-                              universalLinksOnly: true,
-                            );
-                          } else {
-                            throw 'Could not launch $_url';
-                          }
+                          await launch(
+                            _url,
+                            forceSafariVC: false,
+                            universalLinksOnly: true,
+                          );
                         } catch (e) {
                           print(e);
                         }
@@ -293,30 +286,35 @@ class _HomeAlumnoPageState extends State<HomeAlumnoPage> {
                                 color: Colors.grey[400],
                               ),
                             ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text('SALA ' + item.numero.toString(),
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                    )),
-                                Image.asset(
-                                  'assets/images/logo_meet.png',
-                                  height: this.size!.height * 0.08,
-                                ),
-                                Text('Google Meet',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                    )),
-                                Text(
-                                  item.url!,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: primaryBlue,
+                            Container(
+                              width: this.size!.width,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text('SALA ' + item.numero.toString(),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      )),
+                                  Image.asset(
+                                    'assets/images/logo_meet.png',
+                                    height: this.size!.height * 0.08,
                                   ),
-                                ),
-                              ],
+                                  Text('Google Meet',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      )),
+                                  Text(
+                                    item.url!,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: primaryBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),

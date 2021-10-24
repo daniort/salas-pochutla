@@ -7,7 +7,6 @@ import 'package:sigea/screens/screens.dart';
 import 'package:sigea/services/services.dart';
 import 'package:sigea/values/themes.dart';
 import 'package:sigea/values/values.dart';
-import 'package:sigea/values/variables.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,41 +42,18 @@ class Home extends StatelessWidget {
     this.state = Provider.of<AppState>(context, listen: true);
 
     return Scaffold(
-        drawer: MyDrawer(),
         appBar: AppBar(
-          // title: Text(
-          //   'SALAS',
-          //   style: TextStyle(fontFamily: 'Roboto'),
-          // ),
-          actions: [
-            // IconButton(
-            //     onPressed: () async {
-            //       for (String item in areas) {
-            //         await UserServices().addAreas({'area': item});
-            //       }
-            //     },
-            //     icon: Icon(Icons.add)),
-            if (this.state!.isLogin)
-              Center(
-                child: Text(
-                  this.state!.isUser.cargo!.toUpperCase(),
-                ),
-              ),
-            if (this.state!.isLogin)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  backgroundColor: Colors.blue,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: Image.asset(
-                      'assets/images/image.jpeg',
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
+            // actions: [
+            //   IconButton(
+            //       onPressed: () async {
+            //         for (var item in listSalas) {
+            //           await UserServices().addSala(item);
+            //         }
+            //       },
+            //       icon: Icon(Icons.add)),
+            // ],
+            ),
+        drawer: MyDrawer(),
         body: MyBody());
   }
 }
@@ -262,6 +238,7 @@ class MyDrawer extends StatelessWidget {
                 style: styleDrawer,
               ),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.pushNamed(context, 'add_solicitud');
               },
             ),
@@ -320,6 +297,7 @@ class MyDrawer extends StatelessWidget {
                 style: styleDrawer,
               ),
               onTap: () {
+                Navigator.pop(context);
                 this.state!.changeIndexBody(1);
               },
             ),

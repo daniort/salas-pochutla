@@ -1,6 +1,5 @@
 List<Map> listSalas = [
   {"numero": 1, "url": "https://meet.google.com/wdk-hncp-rcn"},
-  {"numero": 1, "url": "https://meet.google.com/wdk-hncp-rcn"},
   {"numero": 2, "url": "https://meet.google.com/vte-kwxg-zhs"},
   {"numero": 3, "url": "https://meet.google.com/qzc-dthv-muv"},
   {"numero": 4, "url": "https://meet.google.com/yha-rxhn-zpn"},
@@ -9,7 +8,7 @@ List<Map> listSalas = [
   {"numero": 7, "url": "https://meet.google.com/mfm-tzpo-kxd"},
   {"numero": 8, "url": "https://meet.google.com/psa-ooqb-eok"},
   {"numero": 9, "url": "https://meet.google.com/twr-nrjz-njg"},
-  {"numero": 1, "url": "https://meet.google.com/tvh-dber-oor"},
+  {"numero": 10, "url": "https://meet.google.com/tvh-dber-oor"},
 ];
 
 List areas = [
@@ -47,7 +46,7 @@ List<Map> users = [
     'nombre': 'EMO JACINTO MENDOZA',
     'cargo': 'DIRECTOR',
     'firma': 'EmoJacintoTec@',
-    'user': ' Emo.jm@',
+    'user': 'Emo.jm@',
   },
   {
     'nombre': 'FLOR LIZZET MÉNDEZ MARAVER',
@@ -239,7 +238,7 @@ List<Map> users = [
     'nombre': 'EDGAR SALMORAN LÓPEZ',
     'cargo': 'DOCENTE',
     'firma': 'EdgarTec@',
-    'user': 'Edgar.sl@'
+    'user': 'Edgar.sl@',
   },
   {
     'nombre': 'JOSÉ GUADALUPE ALMARAZ LÓPEZ',
@@ -284,16 +283,3 @@ List<Map> users = [
     'firma': 'AlumnoTec@',
   },
 ];
-
-
-
-// CLAUDIO ANTONIO CRUZ MENDOZA
-// 	sala6	
-//   sala6.pochutla.tecnm.mx	
-  
-//   SUBDIRECCIÓN DE PLANEACIÓN Y VINCULACIÓN
-  
-//   	10:00 AM	
-//     12:00 PM
-//     	2021-10-15	
-//       REUNIÓN DE TRABAJO PARA LA INTEGRACIÓN DE PDI 2019-2024

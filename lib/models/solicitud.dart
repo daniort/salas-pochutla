@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 SolicitudModel solicitudModelFromJson(String str) =>
     SolicitudModel.fromJson(json.decode(str));
 
@@ -27,27 +29,27 @@ class SolicitudModel {
   String? area;
   String? descripcion;
   DateTime? fecha;
-  String? horaFinal;
   String? idarea;
   int? sala;
-  String? horaInicial;
+  TimeOfDay? horaFinal;
+  TimeOfDay? horaInicial;
   String? idsala;
   String? urlSala;
   String? nombre;
   String? key;
 
-// final timestamp1 = 1627510285; // timestamp in seconds
-//   final DateTime date1 = DateTime.fromMillisecondsSinceEpoch(timestamp1 * 1000);
-//   print(date1);
-
   factory SolicitudModel.fromJson(Map<dynamic, dynamic> json) => SolicitudModel(
       area: json["area"],
       descripcion: json["descripcion"],
       fecha: DateTime.fromMillisecondsSinceEpoch(json["fecha"]),
-      horaFinal: json["hora_final"],
       idarea: json["idarea"],
       sala: json["sala"],
-      horaInicial: json["hora_inicial"],
+      horaInicial: TimeOfDay(
+          hour: int.parse(json["hora_inicial"].split(":")[0]),
+          minute: int.parse(json["hora_inicial"].split(":")[1])),
+      horaFinal: TimeOfDay(
+          hour: int.parse(json["hora_final"].split(":")[0]),
+          minute: int.parse(json["hora_final"].split(":")[1])),
       idsala: json["idsala"],
       nombre: json["nombre"],
       key: json["key"],

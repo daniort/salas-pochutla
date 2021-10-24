@@ -82,6 +82,7 @@ class AppState with ChangeNotifier {
   void logout() {
     this._user = null;
     this._login = false;
+    this._indexBody = 1;
     notifyListeners();
   }
 
